@@ -1,0 +1,138 @@
+---
+title: "NUM-25-07-03"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# fofoof
+NewtonHorner <- function(a, x, eps = 0.0000001){
+  N <- length(a)
+  repeat{
+    y <- a[1]
+    yd <- a[1]
+    if(N > 2){
+      for(i in 2:(N-1)){
+        y <- y*x+a[i]
+        yd <- yd*x+y
+      }
+      y <- y*x+a[N]
+    }
+    xnew <- x-y/yd
+    if(abs(xnew-x) < eps) return(xnew)
+    x <- xnew
+  }
+}
+Horner <- function(a, x){
+  N <- length(a)
+  # if(N == 1) return(rep(a, length(x)))
+  if(N == 1) a
+  res <- a[N]
+  for(i in (N-1):1) res <- res*x + a[i]
+  return(res)
+}
+GausovaEliminaceV2 <- function(A, b, N){
+  Ab <- cbind(A, b)
+  # primy chod
+  for(p in 1:(N-1)){
+    prec <- 1/Ab[p, p]
+    for(i in (p+1):N){
+      j <- (p+1):(N+1)
+      Ab[i, j] <- Ab[i, j] - Ab[i, p] * prec * Ab[p, j]
+    }
+  }
+  # zpetny chod
+  x <- numeric(N)
+  A <- Ab[, -(N+1)]
+  b <- Ab[, N+1]
+  x[N] <- b[N]/A[N, N]
+  for(i in (N-1):1){
+    j <- (i+1):N
+    x[i] <- (b[i] - sum(A[i, j]*x[j]))/A[i, i]
+  }
+  return(x)
+}
+GausovaEliminaceSPivotaci <- function(A, b, N){
+  Ab <- cbind(A, b)
+  # primy chod
+  for(p in 1:(N-1)){
+    pmax <- which.max(abs(Ab[p:N, p])) + p - 1
+    if(pmax != p){
+      j <- p:(N+1)
+      aux <- Ab[p, j]
+      Ab[p, j] <- Ab[pmax, j]
+      Ab[pmax, j] <- aux
+    }
+    prec <- 1/Ab[p, p]
+    for(i in (p+1):N){
+      j <- (p+1):(N+1)
+      Ab[i, j] <- Ab[i, j] - Ab[i, p] * prec * Ab[p, j]
+    }
+  }
+  # zpetny chod
+  x <- numeric(N)
+  A <- Ab[, -(N+1)]
+  b <- Ab[, N+1]
+  x[N] <- b[N]/A[N, N]
+  for(i in (N-1):1){
+    j <- (i+1):N
+    x[i] <- (b[i] - sum(A[i, j]*x[j]))/A[i, i]
+  }
+  return(x)
+}
+```
+```{r}
+# 1. Definice parametrů a matice
+N <- 10 
+A <- matrix(0, N, N)
+b <- rep(1, N)
+
+for(i in 1:N) {
+  for(j in 1:N) {
+    # OPRAVA: závorky ve jmenovateli
+    A[i, j] <- 1 - 1 / (i + j - 1) 
+  }
+}
+
+# 2. Řešení soustavy (vaše funkce)
+x_vec <- GausovaEliminaceSPivotaci(A, b, N)
+
+# 3. Interpolace bodů [i, x_i]
+# Použijeme Newtonovu metodu (vaše dřívější funkce)
+NewtonCoefs <- function(x, y) {
+  n <- length(x)
+  a <- y
+  for (j in 2:n) {
+    a[j:n] <- (a[j:n] - a[j - 1]) / (x[j:n] - x[j - 1])
+  }
+  return(a)
+}
+
+poly_eval <- function(x_base, coefs, x_target) {
+  n <- length(coefs)
+  res <- coefs[n]
+  for (i in (n - 1):1) {
+    res <- res * (x_target - x_base[i]) + coefs[i]
+  }
+  return(res)
+}
+
+indices <- 1:N
+coefs <- NewtonCoefs(indices, x_vec)
+
+# 4. Výpočet hodnot uprostřed (1.5, 2.5, ..., 9.5)
+mid_indices <- seq(1.5, N - 0.5, by = 1)
+mid_values <- sapply(mid_indices, function(val) poly_eval(indices, coefs, val))
+
+stredni_hodnota <- mean(mid_values)
+
+# 5. Grafické znázornění
+plot(indices, x_vec, col = "red", pch = 19, main = paste("Interpolace pro N =", N))
+lines(seq(1, N, 0.1), sapply(seq(1, N, 0.1), function(v) poly_eval(indices, coefs, v)), col = "blue")
+points(mid_indices, mid_values, col = "green", pch = 4) # body uprostřed
+
+print(paste("Střední hodnota v mezibodech:", stredni_hodnota))
+```

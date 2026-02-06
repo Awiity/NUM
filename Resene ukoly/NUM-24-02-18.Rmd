@@ -1,0 +1,143 @@
+---
+title: "num111"
+output: html_document
+date: "2026-02-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# 1. Definice pravé strany DR (logistický růst)
+# r = 0.5 (míra růstu), K = 100 (kapacita)
+logistic_f <- function(t, y) {
+  r <- 0.5
+  K <- 100
+  return(r * y * (1 - y / K))
+}
+
+# 2. Parametry simulace
+t0 <- 0          # počáteční čas
+y0 <- 10         # počáteční populace
+t_end <- 20      # koncový čas
+h <- 0.1         # krok (důležitý pro stabilitu a přesnost)
+n_steps <- (t_end - t0) / h
+
+# 3. Vaše funkce RK4 (ze souboru ukol1.Rmd)
+RK4 <- function(f, x, y, h){
+  hpul <- 0.5*h
+  xpul <- x+hpul
+  k1 <- f(x,y)
+  k2 <- f(xpul,y+hpul*k1)
+  k3 <- f(xpul,y+hpul*k2)
+  k4 <- f(x+h, y+h*k3)
+  return(y+h*(k1+2*(k2+k3)+k4)/6)
+}
+
+# 4. Výpočetní smyčka
+t_vec <- seq(t0, t_end, by = h)
+y_vec <- numeric(length(t_vec))
+y_vec[1] <- y0
+
+for(i in 1:n_steps) {
+  y_vec[i+1] <- RK4(logistic_f, t_vec[i], y_vec[i], h)
+}
+
+# 5. Vizualizace
+plot(t_vec, y_vec, type = "l", col = "darkgreen", lwd = 2,
+     main = "Logistický růst populace (RK4)",
+     xlab = "Čas (t)", ylab = "Populace (y)")
+abline(h = 100, lty = 2, col = "red") # Kapacita prostředí K
+```
+```{r}
+# 1. Příprava dat
+n <- 10
+A <- matrix(0, nrow = n, ncol = n)
+y <- numeric(n)
+
+for (i in 1:n) {
+  y[i] <- sin(i)
+  for (j in 1:n) {
+    A[i, j] <- cos((i - 1) * j) - j
+  }
+}
+
+# 2. Funkce pro Gaussovu eliminaci (odvozeno ze souboru Soustavy_LU_Zpetny_Chod_Pivotace.R)
+gauss_solve <- function(A, b) {
+  n <- length(b)
+  Ab <- cbind(A, b)
+  
+  for (i in 1:(n - 1)) {
+    # Částečná pivotace
+    pivot_idx <- which.max(abs(Ab[i:n, i])) + i - 1
+    Ab[c(i, pivot_idx), ] <- Ab[c(pivot_idx, i), ]
+    
+    for (j in (i + 1):n) {
+      m <- Ab[j, i] / Ab[i, i]
+      Ab[j, ] <- Ab[j, ] - m * Ab[i, ]
+    }
+  }
+  
+  # Zpětný chod
+  x <- numeric(n)
+  x[n] <- Ab[n, n + 1] / Ab[n, n]
+  for (i in (n - 1):1) {
+    x[i] <- (Ab[i, n + 1] - sum(Ab[i, (i + 1):n] * x[(i + 1):n])) / Ab[i, i]
+  }
+  return(x)
+}
+
+x_res <- gauss_solve(A, y)
+print(x_res)
+```
+```{r}
+# Funkce pro výpočet poměrných diferencí
+newton_coef <- function(x, y) {
+  n <- length(x)
+  coefs <- y
+  for (j in 2:n) {
+    coefs[j:n] <- (coefs[j:n] - coefs[j - 1]) / (x[j:n] - x[j - 1])
+  }
+  return(coefs)
+}
+
+# Výpočet hodnoty polynomu v bodě (Hornerovo schéma)
+poly_val <- function(x_base, coefs, x_target) {
+  n <- length(coefs)
+  res <- coefs[n]
+  for (i in (n - 1):1) {
+    res <- res * (x_target - x_base[i]) + coefs[i]
+  }
+  return(res)
+}
+
+coefs <- newton_coef(x_res, y)
+p_zero <- poly_val(x_res, coefs, 0) # Průsečík s osou y
+
+# Vykreslení
+x_plot <- seq(min(x_res), max(x_res), length.out = 200)
+y_plot <- sapply(x_plot, function(v) poly_val(x_res, coefs, v))
+
+plot(x_res, y, col = "red", pch = 19, main = "Newtonova interpolace")
+lines(x_plot, y_plot, col = "blue")
+abline(v = 0, h = 0, lty = 2)
+points(0, p_zero, col = "green", pch = 15)
+```
+```{r}
+# Složené Simpsonovo pravidlo (ze souboru Integrace_Rombergova_Metoda.R)
+simpson <- function(x_base, coefs, a, b, m = 100) {
+  h <- (b - a) / m
+  x_vals <- seq(a, b, by = h)
+  y_vals <- sapply(x_vals, function(v) poly_val(x_base, coefs, v))
+  
+  s <- y_vals[1] + y_vals[m + 1] + 
+       4 * sum(y_vals[seq(2, m, by = 2)]) + 
+       2 * sum(y_vals[seq(3, m - 1, by = 2)])
+  return(s * h / 3)
+}
+
+x_min <- min(x_res)
+x_max <- max(x_res)
+integral_res <- simpson(x_res, coefs, x_min, x_max)
+print(integral_res)
+```

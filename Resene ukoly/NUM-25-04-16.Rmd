@@ -1,0 +1,38 @@
+---
+title: "ukol6"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# 
+# Analytické řešení
+IA <- log(2)
+
+# Lichoběžníkové pravidlo (Newtonův-Cotesův vzorec řádu 1)
+lichobeznik <- function(f, a, b, n) {
+  h <- (b - a) / n
+  x <- seq(a, b, by = h)
+  y <- f(x)
+  # Vzorec: h/2 * (y0 + 2*y1 + 2*y2 + ... + yn)
+  return((h / 2) * (y[1] + 2 * sum(y[2:n]) + y[n + 1]))
+}
+
+f <- function(x) 1/x
+
+vysledky <- data.frame(i = 0:20, n = 2^(0:20), y = 0)
+
+for(i in 0:20) {
+  n_dilku <- 2^i
+  IN <- lichobeznik(f, 1, 2, n_dilku)
+  vysledky$y[i+1] <- IN - IA
+}
+
+# Vizualizace (Logaritmické měřítko pro osu y je klíčové)
+plot(vysledky$i, abs(vysledky$y), type = "b", log = "y", 
+     xlab = "i (n = 2^i)", ylab = "|IN - IA|",
+     main = "Závislost chyby integrace na zjemnění dělení")
+```

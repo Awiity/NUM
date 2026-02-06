@@ -1,0 +1,61 @@
+---
+title: "NUM-25-12-22"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# Parametry modelu
+r <- 0.5
+A <- 20
+K <- 100
+N0 <- 60
+target_N <- 80
+
+# Diferenciální rovnice
+f <- function(t, N) {
+  return(-r * N * (1 - N/A) * (1 - N/K))
+}
+
+# Funkce pro jeden krok RK4 (inspirováno )
+rk4_step <- function(f, t, N, dt) {
+  k1 <- f(t, N)
+  k2 <- f(t + dt/2, N + dt/2 * k1)
+  k3 <- f(t + dt/2, N + dt/2 * k2)
+  k4 <- f(t + dt, N + dt * k3)
+  return(N + (dt/6) * (k1 + 2*k2 + 2*k3 + k4))
+}
+```
+```{r}
+# Hlavní výpočetní smyčka pro různé kroky dt
+steps <- c(0.1, 0.05, 0.02, 0.01)
+t_80_results <- c()
+
+for (dt in steps) {
+  t <- 0
+  N <- N0
+  while (N < target_N) {
+    N_prev <- N
+    t_prev <- t
+    N <- rk4_step(f, t, N, dt)
+    t <- t + dt
+  }
+  # Lineární interpolace mezi (t_prev, N_prev) a (t, N)
+  t_interp <- t_prev + (target_N - N_prev) * (t - t_prev) / (N - N_prev)
+  t_80_results <- c(t_80_results, t_interp)
+}
+
+# Aproximace parabolou pomocí MNC (inspirováno [cite: 20, 29])
+# Model: t_80 = c + b*dt + a*dt^2
+df <- data.frame(dt = steps, t80 = t_80_results)
+model <- lm(t80 ~ poly(dt, 2, raw = TRUE), data = df)
+
+# Hodnota pro dt = 0 je koeficient 'intercept' (parametr c)
+t80_final <- predict(model, newdata = data.frame(dt = 0))
+
+cat("Vypočtené časy t80 pro různé kroky:", t_80_results, "\n")
+cat("Odhadnutý čas t80 pro dt -> 0 je:", t80_final, "\n")
+```

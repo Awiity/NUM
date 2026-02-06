@@ -8,58 +8,55 @@ date: "2026-02-06"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
-GausovaEliminaceSPivotaci <- function(A, b, N){
-  Ab <- cbind(A, b)
-  # primy chod
-  for(p in 1:(N-1)){
-    pmax <- which.max(abs(Ab[p:N, p])) + p - 1
-    if(pmax != p){
-      j <- p:(N+1)
-      aux <- Ab[p, j]
-      Ab[p, j] <- Ab[pmax, j]
-      Ab[pmax, j] <- aux
-    }
-    prec <- 1/Ab[p, p]
-    for(i in (p+1):N){
-      j <- (p+1):(N+1)
-      Ab[i, j] <- Ab[i, j] - Ab[i, p] * prec * Ab[p, j]
-    }
-  }
-  # zpetny chod
-  x <- numeric(N)
-  A <- Ab[, -(N+1)]
-  b <- Ab[, N+1]
-  x[N] <- b[N]/A[N, N]
-  for(i in (N-1):1){
-    j <- (i+1):N
-    x[i] <- (b[i] - sum(A[i, j]*x[j]))/A[i, i]
-  }
-  return(x)
-}
+# 1. Numerická integrace (Simpsonovo pravidlo)
+# Integrujeme funkci f(t) = t^k
 simpson_hilbert <- function(k, m = 100) {
   a <- 0; b <- 1
   h <- (b - a) / m
   t <- seq(a, b, by = h)
-  y <- t^k # x_vals
+  y <- t^k
   s <- y[1] + y[m + 1] + 
        4 * sum(y[seq(2, m, by = 2)]) + 
        2 * sum(y[seq(3, m - 1, by = 2)])
   return(s * h / 3)
 }
-```
-```{r}
-k <- function(i, j) i + j - 2
 
-for(N in 2:20){
-  A <- matrix(0, N, N)
-  for(i in 1:N){
-    for(j in 1:N){
-      A[i, j] = simpson_hilbert(k(i, j))
+# 2. Vaše funkce Gaussovy eliminace (z ukol1.Rmd)
+GausovaEliminaceSPivotaci <- function(A, b, N){
+  Ab <- cbind(A, b)
+  for(p in 1:(N-1)){
+    pmax <- which.max(abs(Ab[p:N, p])) + p - 1
+    Ab[c(p, pmax), ] <- Ab[c(pmax, p), ] # Prohození řádků
+    prec <- 1/Ab[p, p]
+    for(i in (p+1):N){
+      Ab[i, (p+1):(N+1)] <- Ab[i, (p+1):(N+1)] - Ab[i, p] * prec * Ab[p, (p+1):(N+1)]
     }
   }
+  x <- numeric(N)
+  for(i in N:1){
+    x[i] <- (Ab[i, N+1] - sum(Ab[i, (i+1):N] * x[(i+1):N])) / Ab[i, i]
+  }
+  return(x)
+}
+
+# 3. Výpočet pro N = 2 až 20
+for (N in 2:20) {
+  # Sestavení matice A
+  A <- matrix(0, nrow = N, ncol = N)
+  for (i in 1:N) {
+    for (j in 1:N) {
+      A[i, j] <- simpson_hilbert(i + j - 2)
+    }
+  }
+  
+  # Sestavení vektoru b (součet řádků)
   b <- rowSums(A)
   
-  x <- GausovaEliminaceSPivotaci(A, b, N)
-  print(x)
+  # Řešení soustavy
+  x_res <- GausovaEliminaceSPivotaci(A, b, N)
+  
+  # Výpočet chyby (vzdálenost od vektoru jedniček)
+  chyba <- sqrt(sum((x_res - 1)^2))
+  cat(sprintf("N = %2d | Chyba: %.2e | První prvek x[1]: %.5f\n", N, chyba, x_res[1]))
 }
 ```

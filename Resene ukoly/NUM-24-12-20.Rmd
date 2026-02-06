@@ -58,11 +58,4 @@ for(i in 1:50) {
 
 y0_final <- (low + high) / 2
 print(paste("Počáteční podmínka y(0) je:", round(y0_final, 5)))
-
-```
-```{r}
-  n_steps = 100
-  h = 1 / n_steps
-  x_vals = seq(0, 1, by = h)
-  numeric(length(x_vals))
 ```
