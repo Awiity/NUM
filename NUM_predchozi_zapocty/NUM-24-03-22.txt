@@ -1,0 +1,6 @@
+Mějme čtvercovou matici řádu 50.
+- V prvním řádku jsou její hodnoty 100.
+- V ostatních okrajových buňkách jsou její hodnoty 0.
+- Pro vnitřní buňky platí, že jsou aritmetickým průměrem sousedních buněk:
+	A[i,j] <- 0.25*(A[i-1,j] + A[i+1,j] + A[i,j-1] + A[i,j+1])
+Určete hodnoty vnitřních buněk.

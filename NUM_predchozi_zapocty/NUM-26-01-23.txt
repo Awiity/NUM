@@ -1,0 +1,6 @@
+dnesni zadani:
+
+resit pomoci metody puleni intervalu (bisekce) a pomoci linearni interpolace
+
+pomoci bisekce to vyslo 0.2337519
+pomoci linearni interpolace to vyslo 0.2451688

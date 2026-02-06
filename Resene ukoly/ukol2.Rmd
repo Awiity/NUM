@@ -1,0 +1,68 @@
+---
+title: "ukol2"
+output: html_document
+date: "2026-02-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# 1. Definice pravé strany DR: y' = y - x
+f_dr <- function(x, y) {
+  return(y - x)
+}
+
+# 2. Funkce, která pro dané y0 (počáteční podmínka) vypočítá hodnotu integrálu
+vypocet_integralu <- function(y0) {
+  n_steps <- 100
+  h <- 1 / n_steps
+  x_vals <- seq(0, 1, by = h)
+  y_vals <- numeric(length(x_vals))
+  y_vals[1] <- y0
+  
+  # RK4 pro řešení DR (vaše implementace)
+  for(i in 1:n_steps) {
+    # Definice vnitřních kroků RK4 
+    k1 <- f_dr(x_vals[i], y_vals[i])
+    k2 <- f_dr(x_vals[i] + 0.5*h, y_vals[i] + 0.5*h*k1)
+    k3 <- f_dr(x_vals[i] + 0.5*h, y_vals[i] + 0.5*h*k2)
+    k4 <- f_dr(x_vals[i] + h, y_vals[i] + h*k3)
+    y_vals[i+1] <- y_vals[i] + h*(k1 + 2*k2 + 2*k3 + k4)/6
+  }
+  
+  # Výpočet integrálu pomocí Simpsonova pravidla 
+  # (Složené Simpsonovo pravidlo: h/3 * (y0 + 4*y1 + 2*y2 + ... + yn))
+  integ <- (h/3) * (y_vals[1] + y_vals[n_steps+1] + 
+                    4 * sum(y_vals[seq(2, n_steps, by=2)]) + 
+                    2 * sum(y_vals[seq(3, n_steps-1, by=2)]))
+  return(integ)
+}
+
+# 3. Hledání kořene (Metoda půlení intervalu pro y0)
+# Hledáme y0 takové, aby vypocet_integralu(y0) - 2 == 0 [cite: 28, 61]
+F_cil <- function(y0) {
+  return(vypocet_integralu(y0) - 2)
+}
+
+# Bisekce 
+low <- -10; high <- 10 # Odhad intervalu pro počáteční hodnotu
+for(i in 1:50) {
+  mid <- (low + high) / 2
+  if(F_cil(low) * F_cil(mid) < 0) {
+    high <- mid
+  } else {
+    low <- mid
+  }
+}
+
+y0_final <- (low + high) / 2
+print(paste("Počáteční podmínka y(0) je:", round(y0_final, 5)))
+
+```
+```{r}
+  n_steps = 100
+  h = 1 / n_steps
+  x_vals = seq(0, 1, by = h)
+  numeric(length(x_vals))
+```

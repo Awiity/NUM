@@ -1,0 +1,122 @@
+1. Soustavy lineárních rovnic a integrace
+Nový název: Soustavy_Vandermonde_Integrace_Obdelnik.R
+
+Popis: Kombinovaný soubor. Obsahuje obdélníkovou metodu (midpoint rule) pro integraci, metodu půlení intervalu a řešení soustav pomocí Vandermondovy matice (proložení bodů polynomem).
+
+2. Diferenciální rovnice a soustavy
+Nový název: ODE_Euler_RK4_Soustavy_LinReg.R
+
+Popis: Řešení obyčejných diferenciálních rovnic (ODE). Obsahuje Eulera (I. a II. řádu) a Runge-Kutta 4. řádu. Dále obsahuje Gaussovu eliminaci s pivotací, Jacobiho iteraci a základní lineární regresi (metoda nejmenších čtverců).
+
+3. Nelineární rovnice (Kořeny) - Komplet
+
+
+Nový název: Nelinearni_Newton_Steffensen_Halley.R
+
+Popis: Rozsáhlý přehled metod pro hledání kořenů jedné rovnice. Obsahuje Newtonovu metodu (včetně variant s derivací i bez), Steffensenovu, Halleyovu (3. řád konvergence), sečny, půlení intervalu, Regula Falsi a metodu pevného bodu.
+
+4. Nelineární rovnice - Vizualizace
+
+
+Nový název: Nelinearni_Iterace_Vizualizace.R
+
+Popis: Podobné jako předchozí, ale s kódem pro grafické znázornění konvergence (pavoukový diagram u metody pevného bodu). Obsahuje Bisekci, Regula Falsi a Newtonovu metodu.
+
+5. Polynomy a Chebyshev
+Původní název: NUM_5.txt
+
+Nový název: Polynomy_Horner_Chebyshev_Lagrange.R
+
+Popis: Práce s polynomy. Generování Čebyševových polynomů, Hornerovo schéma (včetně derivace), Newton-Hornerova metoda pro kořeny polynomů a Lagrangeova interpolace.
+
+6. Interpolace a kořeny polynomů
+Původní název: NUM_6.txt
+
+Nový název: Interpolace_Lagrange_Horner_Newton.R
+
+Popis: Zaměřeno na Lagrangeův interpolační polynom a efektivní vyhodnocování polynomů pomocí Hornera. Obsahuje ukázku interpolace funkce sinus náhodnými body.
+
+7. Lineární soustavy - Přímé metody
+Původní název: NUM_7.txt
+
+Nový název: Soustavy_Gauss_LU_Rozklad.R
+Popis: Implementace Gaussovy eliminace (klasické i s pivotací) a LU rozkladu. Ideální pro přímé řešení soustav $Ax = b$.
+
+9. Iterační metody a Newtonův polynom
+Původní název: NUM_9.txt
+
+Nový název: Soustavy_Jacobi_GaussSeidel_NewtonPol.R
+
+Popis: Řešení soustav iteračně: Jacobiho metoda a Gauss-Seidelova metoda. Navíc obsahuje konstrukci Newtonova interpolačního polynomu pomocí poměrných diferencí.
+
+10. Newtonova interpolace a Iterace (Efektivní)
+Původní název: NUM_10.txt
+
+Nový název: Interpolace_Newton_Soustavy_Jacobi.R
+
+Popis: Pokročilá práce s Newtonovým polynomem (přidávání bodů za běhu) a zjednodušená, rychlá implementace Jacobiho metody pro soustavy s dominantní diagonálou.
+
+11. Numerická derivace a integracePůvodní název: NUM_16.txtNový název: Derivace_a_Integrace_Zaklady.RPopis: Základní metody pro numerický výpočet derivací (dopředná, centrální a druhá derivace). Obsahuje implementaci obdélníkového, lichoběžníkového a Simpsonova pravidla pro integraci. Součástí je i testování vlivu kroku $h$ na přesnost.
+
+12. Derivace a integrace polynomů
+Původní název: NUM_17.txt
+
+Nový název: Polynomy_Horner_Derivace_Integrace.R
+
+
+Popis: Specifické použití Hornerova schématu pro výpočet hodnoty, první a druhé derivace polynomu. Obsahuje také srovnání analytického integrálu polynomu s numerickými metodami (Midpoint, Trapezoidal, Simpson).
+
+13. Rombergova integrační metoda
+Původní název: NUM_18.txt
+
+Nový název: Integrace_Rombergova_Metoda.R
+
+
+Popis: Implementace Rombergovy metody pro zpřesňování výpočtu určitého integrálu. Obsahuje dvě varianty (Romberg a RombergJ), které využívají Richardsonovu extrapolaci k dosažení vyšší přesnosti z obdélníkového pravidla.
+
+14. Obyčejné diferenciální rovnice (ODE) I
+Původní název: NUM_19.txt
+
+Nový název: ODE_Euler_RK4_Rozpad_Oscilator.R
+
+
+Popis: Řešení ODE prvního řádu (radioaktivní rozpad) a soustav (tlumený harmonický oscilátor). Obsahuje metody: Euler I. řádu, dvě varianty Eulera II. řádu (středový bod a průměrná směrnice) a Runge-Kutta 4. řádu (RK4).
+
+15. Logistický model a RK4
+Původní název: NUM_20.txt
+
+Nový název: ODE_RK4_Logisticky_Model.R
+
+
+Popis: Aplikace metody RK4 na řešení logistické diferenciální rovnice (populační růst). Obsahuje srovnání numerického řešení s analytickou křivkou.
+
+16. Základy interpolace a regrese
+Původní název: NUM_11.txt / NUM_12.txt (Identické soubory)
+
+Nový název: Interpolace_Linearni_Parabola_MNC.R
+
+
+Popis: Ukázka proložení dvou bodů přímkou a tří bodů parabolou pomocí Vandermondovy matice, Newtonova a Lagrangeova tvaru. Obsahuje také jednoduchý příklad metody nejmenších čtverců (MNC) pro lineární regresi.
+
+17. Komplexní interpolace a MiniMax
+Původní název: NUM_13.txt
+
+Nový název: Interpolace_Srovnani_MNC_MiniMax.R
+
+
+Popis: Srovnání různých přístupů k aproximaci dat: Vandermonde, Newton a Lagrange pro vyšší stupně polynomů. Navíc obsahuje metodu nejmenších čtverců a pokročilou optimalizaci MiniMax pomocí metody Monte Carlo pro minimalizaci maximální chyby.
+
+18. Metoda nejmenších čtverců (MNC) - Obecná
+Původní název: NUM_14.txt
+
+Nový název: Aproximace_MNC_Obecna_Baze.R
+
+Popis: Implementace MNC pro obecné báze funkcí (polynomy $\Phi$ nebo goniometrické funkce $\Theta$). K řešení soustavy normálních rovnic využívá Gaussovu eliminaci s pivotací
+
+19. Metoda nejmenších čtverců pro polynomy
+Původní název: NUM_15.txt
+
+Nový název: Aproximace_MNC_Polynomy_Efektivne.R
+
+Popis: Dvě verze implementace MNC pro polynomy: klasická tvorba matice $A$ a vektoru $b$ , a matematicky efektivnější verze využívající maticové násobení $X \cdot X^T$. Obsahuje měření času výpočtu
+

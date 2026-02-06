@@ -1,0 +1,65 @@
+---
+title: "ukol4"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+GausovaEliminaceSPivotaci <- function(A, b, N){
+  Ab <- cbind(A, b)
+  # primy chod
+  for(p in 1:(N-1)){
+    pmax <- which.max(abs(Ab[p:N, p])) + p - 1
+    if(pmax != p){
+      j <- p:(N+1)
+      aux <- Ab[p, j]
+      Ab[p, j] <- Ab[pmax, j]
+      Ab[pmax, j] <- aux
+    }
+    prec <- 1/Ab[p, p]
+    for(i in (p+1):N){
+      j <- (p+1):(N+1)
+      Ab[i, j] <- Ab[i, j] - Ab[i, p] * prec * Ab[p, j]
+    }
+  }
+  # zpetny chod
+  x <- numeric(N)
+  A <- Ab[, -(N+1)]
+  b <- Ab[, N+1]
+  x[N] <- b[N]/A[N, N]
+  for(i in (N-1):1){
+    j <- (i+1):N
+    x[i] <- (b[i] - sum(A[i, j]*x[j]))/A[i, i]
+  }
+  return(x)
+}
+simpson_hilbert <- function(k, m = 100) {
+  a <- 0; b <- 1
+  h <- (b - a) / m
+  t <- seq(a, b, by = h)
+  y <- t^k # x_vals
+  s <- y[1] + y[m + 1] + 
+       4 * sum(y[seq(2, m, by = 2)]) + 
+       2 * sum(y[seq(3, m - 1, by = 2)])
+  return(s * h / 3)
+}
+```
+```{r}
+k <- function(i, j) i + j - 2
+
+for(N in 2:20){
+  A <- matrix(0, N, N)
+  for(i in 1:N){
+    for(j in 1:N){
+      A[i, j] = simpson_hilbert(k(i, j))
+    }
+  }
+  b <- rowSums(A)
+  
+  x <- GausovaEliminaceSPivotaci(A, b, N)
+  print(x)
+}
+```

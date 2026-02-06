@@ -1,0 +1,52 @@
+---
+title: "ukol3"
+output: html_document
+date: "2026-02-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# Function to calculate NPV
+npv <- function(rate) {
+  cashflows <- c(4,4,4)
+  t <- 1:3
+  sum(cashflows / (1 + rate)^t) - 8
+}
+
+Bisection <- function(f, xleft, xright){
+  yleft <- f(xleft)
+  yright <- f(xright)
+  if(yleft * yright < 0){
+    # counter <- 0
+    repeat{
+      xcenter <- (xleft + xright)/2
+      # counter <- counter + 1
+      if(xcenter == xleft || xcenter == xright) break
+      ycenter <- f(xcenter)
+      if(yleft * ycenter < 0){
+        xright <- xcenter
+        yright <- ycenter
+      }else{
+        xleft <- xcenter
+        yleft <- ycenter
+      }
+    }
+  }else{
+    stop("Chyba na vstupu.")
+  }
+  # print(counter)
+  return(xcenter)
+}
+Bisection(npv, 0.1, 0.3)
+# Výpočet hodnot v krajních bodech
+i_n <- 0.1
+i_v <- 0.3
+npv_n <- npv(i_n) # Kladná hodnota
+npv_v <- npv(i_v) # Záporná hodnota
+
+# Lineární interpolace (metoda tětiv)
+irr_interp <- i_n + npv_n * (i_v - i_n) / (npv_n - npv_v)
+print(irr_interp) 
+```
